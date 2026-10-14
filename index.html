@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تطبيق السنة النبوية - موسوعة شاملة للسنة والحديث">
+    <meta name="theme-color" content="#1F3A5E">
+    
+    <title>تطبيق السنة النبوية 📖</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+</head>
+<body>
+    <!-- التطبيق الرئيسي -->
+    <div id="app">
+        <!-- الهيدر -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📖 تطبيق السنة</h1>
+                <button id="theme-toggle" class="theme-toggle">🌙</button>
+            </div>
+        </header>
+
+        <!-- محتوى الصفحة -->
+        <main class="main-content">
+            <!-- صفحة الرئيسية -->
+            <div id="home-page" class="page active">
+                <!-- شريط البحث -->
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="ابحث عن حديث..."
+                        autocomplete="off"
+                    >
+                    <button id="search-btn" class="search-btn">🔍</button>
+                </div>
+
+                <!-- نتائج البحث / قائمة الأحاديث -->
+                <div id="hadiths-list" class="hadiths-list"></div>
+
+                <!-- تحميل -->
+                <div id="loading" class="loading" style="display:none;">
+                    <div class="spinner"></div>
+                    <p>جاري التحميل...</p>
+                </div>
+            </div>
+
+            <!-- صفحة تفاصيل الحديث -->
+            <div id="hadith-detail-page" class="page">
+                <button id="back-btn" class="back-btn">← رجوع</button>
+                <div id="hadith-detail-content" class="hadith-detail-content"></div>
+            </div>
+
+            <!-- صفحة المفضلة -->
+            <div id="favorites-page" class="page">
+                <h2>المفضلة ❤️</h2>
+                <div id="favorites-list" class="favorites-list"></div>
+            </div>
+
+            <!-- صفحة الإعدادات -->
+            <div id="settings-page" class="page">
+                <h2>الإعدادات ⚙️</h2>
+                <div class="settings-content">
+                    <!-- المظهر -->
+                    <div class="setting-group">
+                        <h3>المظهر</h3>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dark-mode" class="checkbox">
+                            الوضع الليلي
+                        </label>
+                    </div>
+
+                    <!-- حجم الخط -->
+                    <div class="setting-group">
+                        <h3>حجم الخط</h3>
+                        <div class="font-size-control">
+                            <button id="decrease-font" class="btn-small">-</button>
+                            <span id="font-size-display">عادي</span>
+                            <button id="increase-font" class="btn-small">+</button>
+                        </div>
+                    </div>
+
+                    <!-- اللغة -->
+                    <div class="setting-group">
+                        <h3>اللغة</h3>
+                        <select id="language-select" class="select">
+                            <option value="ar">العربية</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+
+                    <!-- عن التطبيق -->
+                    <div class="setting-group">
+                        <h3>عن التطبيق</h3>
+                        <p class="about-text">
+                            تطبيق السنة النبوية - موسوعة شاملة للحديث والسنة<br>
+                            النسخة: 1.0.0<br>
+                            <a href="privacy.html" target="_blank">سياسة الخصوصية</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- شريط التنقل السفلي -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-page="home-page">
+                🏠 الرئيسية
+            </button>
+            <button class="nav-btn" data-page="favorites-page">
+                ❤️ المفضلة
+            </button>
+            <button class="nav-btn" data-page="settings-page">
+                ⚙️ الإعدادات
+            </button>
+        </nav>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker مسجل'))
+                .catch(err => console.log('خطأ في Service Worker:', err));
+        }
+    </script>
+</body>
+</html>
