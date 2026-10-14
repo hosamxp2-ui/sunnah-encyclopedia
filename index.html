@@ -1,285 +1,145 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#145c4b">
-  <meta name="description" content="موسوعة السنة وشروحها">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <title>موسوعة السنة وشروحها</title>
-  <style>
-    :root {
-      font-family: system-ui, sans-serif;
-      color: #202820;
-      background: #f5f7f5;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; }
-    header { background: #145c4b; color: white; padding: 20px 16px; }
-    header h1 { font-size: 1.35rem; margin: 0 0 5px; }
-    header p { margin: 0; }
-    main { max-width: 760px; margin: auto; padding: 16px; }
-    nav, .tools, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    nav { margin-bottom: 14px; }
-    button, select, input { font: inherit; }
-    button { border: 0; border-radius: 10px; padding: 10px 13px; cursor: pointer; }
-    nav button, .primary { color: white; background: #145c4b; }
-    nav button.active { background: #0b3f33; }
-    .secondary { color: #145c4b; background: #e8f1ec; }
-    .danger { color: #8c3028; background: #f9e9e7; }
-    #search { width: 100%; padding: 12px; border: 1px solid #cbd5ce; border-radius: 10px; margin: 4px 0 12px; }
-    .card { background: white; padding: 16px; margin: 10px 0; border: 1px solid #e1e8e2; border-radius: 14px; }
-    .card h2 { font-size: 1.1rem; margin: 0 0 6px; }
-    .muted { color: #637069; font-size: .92rem; }
-    .actions { margin-top: 12px; }
-    #message { min-height: 1.4em; color: #145c4b; }
-    .reader-text { white-space: pre-wrap; line-height: 1.9; }
-    .reader-tools { align-items: center; margin: 12px 0; }
-    .reader-tools select { padding: 8px; border-radius: 8px; border: 1px solid #ccd5ce; }
-    .hidden { display: none; }
-    footer { text-align: center; color: #637069; padding: 20px; font-size: .85rem; }
-    body.dark { background: #17201c; color: #edf2ee; }
-    body.dark .card { background: #222d27; border-color: #34443a; }
-    body.dark .muted { color: #bac8be; }
-    body.dark input, body.dark select { background: #222d27; color: white; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1F3A5E">
+    <meta name="description" content="تطبيق السنة النبوية - شامل للأحاديث والشروحات">
+    
+    <title>تطبيق السنة 📖</title>
+    
+    <!-- ربط ملف CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- أيقونة التطبيق -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231F3A5E' width='192' height='192'/><text x='96' y='130' font-size='100' fill='white' text-anchor='middle' font-family='Arial'>📖</text></svg>">
 </head>
 <body>
-<header>
-  <h1>موسوعة السنة وشروحها</h1>
-  <p>ابحث واقرأ ونزّل الكتب للقراءة دون إنترنت</p>
-</header>
+    <!-- الشريط العلوي -->
+    <header class="header">
+        <div class="header-content">
+            <h1>🕌 تطبيق السنة</h1>
+            <button id="darkModeBtn" class="btn-icon">🌙</button>
+        </div>
+    </header>
 
-<main>
-  <nav>
-    <button id="libraryTab" class="active">المكتبة</button>
-    <button id="downloadsTab">تحميلاتي</button>
-  </nav>
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <!-- شريط البحث -->
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="ابحث عن حديث..."
+                class="search-input"
+            >
+            <button class="btn-search">🔍</button>
+        </div>
 
-  <input id="search" type="search" placeholder="ابحث في عناوين الكتب">
-  <p id="message" role="status"></p>
-  <section id="bookList"></section>
-  <section id="reader" class="hidden"></section>
-</main>
+        <!-- الفلاتر -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">الكل</button>
+            <button class="filter-btn" data-filter="sahih">✓ صحيح</button>
+            <button class="filter-btn" data-filter="hasan">≈ حسن</button>
+            <button class="filter-btn" data-filter="daif">! ضعيف</button>
+        </div>
 
-<footer>نسخة تجريبية — النص المعروض للتوضيح فقط</footer>
+        <!-- قائمة الأحاديث -->
+        <div class="hadith-list" id="hadithList">
+            <div class="loading">جاري التحميل...</div>
+        </div>
+    </main>
 
-<script>
-const $ = id => document.getElementById(id);
-let catalog = [];
-let currentTab = "library";
+    <!-- الصفحات المختلفة (مخفية حالياً) -->
+    
+    <!-- صفحة تفاصيل الحديث -->
+    <div id="hadithDetailPage" class="page hidden">
+        <header class="header">
+            <button class="btn-back">← رجوع</button>
+            <h1>تفاصيل الحديث</h1>
+            <button class="btn-favorite">🤍</button>
+        </header>
+        <div class="detail-content" id="detailContent">
+            <!-- سيملأ بـ JavaScript -->
+        </div>
+    </div>
 
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("sunnah-library", 1);
-    request.onupgradeneeded = () =>
-      request.result.createObjectStore("books", { keyPath: "id" });
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
+    <!-- صفحة المفضلة -->
+    <div id="favoritesPage" class="page hidden">
+        <header class="header">
+            <h1>❤️ المفضلة</h1>
+            <button class="btn-settings">⚙️</button>
+        </header>
+        <div class="favorites-list" id="favoritesList">
+            <div class="empty-state">
+                <p>لا توجد مفضلات بعد</p>
+                <button class="btn-primary">ابدأ الآن</button>
+            </div>
+        </div>
+    </div>
 
-async function savedBooks() {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction("books").objectStore("books").getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
+    <!-- صفحة الإعدادات -->
+    <div id="settingsPage" class="page hidden">
+        <header class="header">
+            <button class="btn-back">← رجوع</button>
+            <h1>⚙️ الإعدادات</h1>
+        </header>
+        <div class="settings-content">
+            <!-- حجم الخط -->
+            <div class="setting-group">
+                <label>حجم الخط:</label>
+                <div class="font-size-control">
+                    <button class="btn-small">-</button>
+                    <span id="fontSizeValue">عادي</span>
+                    <button class="btn-large">+</button>
+                </div>
+            </div>
 
-async function saveBook(book) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction("books", "readwrite")
-      .objectStore("books").put(book);
-    request.onsuccess = resolve;
-    request.onerror = () => reject(request.error);
-  });
-}
+            <!-- الوضع الليلي -->
+            <div class="setting-group">
+                <label>الوضع الليلي:</label>
+                <button id="darkModeToggle" class="toggle-btn">OFF</button>
+            </div>
 
-async function deleteBook(id) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction("books", "readwrite")
-      .objectStore("books").delete(id);
-    request.onsuccess = resolve;
-    request.onerror = () => reject(request.error);
-  });
-}
+            <!-- حول التطبيق -->
+            <div class="setting-group">
+                <button class="btn-text">📖 عن التطبيق</button>
+                <button class="btn-text">📋 الشروط والخصوصية</button>
+                <button class="btn-text">💾 تحميل البيانات</button>
+            </div>
+        </div>
+    </div>
 
-function esc(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  })[c]);
-}
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-page="home">
+            <span class="icon">🏠</span>
+            <span>الرئيسية</span>
+        </button>
+        <button class="nav-btn" data-page="favorites">
+            <span class="icon">❤️</span>
+            <span>المفضلة</span>
+        </button>
+        <button class="nav-btn" data-page="settings">
+            <span class="icon">⚙️</span>
+            <span>الإعدادات</span>
+        </button>
+    </nav>
 
-function message(text) {
-  $("message").textContent = text;
-}
+    <!-- ملف JavaScript -->
+    <script src="app.js"></script>
 
-async function render() {
-  const saved = await savedBooks();
-  const query = $("search").value.trim().toLowerCase();
-  const books = currentTab === "downloads" ? saved : catalog;
-  const shown = books.filter(book =>
-    `${book.title} ${book.author || ""}`.toLowerCase().includes(query)
-  );
-
-  $("reader").classList.add("hidden");
-  $("bookList").classList.remove("hidden");
-
-  if (!shown.length) {
-    $("bookList").innerHTML =
-      '<article class="card">لا توجد كتب في هذا القسم.</article>';
-    return;
-  }
-
-  $("bookList").innerHTML = shown.map(book => {
-    const isSaved = saved.some(item => item.id === book.id);
-    return `<article class="card">
-      <h2>${esc(book.title)}</h2>
-      <div class="muted">${esc(book.author || "")} ${esc(book.description || "")}</div>
-      <div class="actions">
-        <button class="primary" data-open="${esc(book.id)}">قراءة</button>
-        ${isSaved
-          ? `<button class="danger" data-delete="${esc(book.id)}">حذف التنزيل</button>`
-          : `<button class="secondary" data-download="${esc(book.id)}">تنزيل</button>`}
-      </div>
-    </article>`;
-  }).join("");
-}
-
-async function getBookContent(id) {
-  const saved = (await savedBooks()).find(book => book.id === id);
-  if (saved) return saved.content;
-
-  const item = catalog.find(book => book.id === id);
-  if (!item) return null;
-
-  const response = await fetch(item.file);
-  if (!response.ok) throw new Error("تعذر تحميل الكتاب");
-  return await response.json();
-}
-
-async function openBook(id) {
-  try {
-    const content = await getBookContent(id);
-    if (!content) {
-      message("الكتاب غير متاح. اتصل بالإنترنت لتنزيله أولًا.");
-      return;
-    }
-
-    $("bookList").classList.add("hidden");
-    $("reader").classList.remove("hidden");
-
-    const font = localStorage.getItem("reader-font") || "serif";
-    const size = localStorage.getItem("reader-size") || "19";
-    const dark = localStorage.getItem("reader-dark") === "true";
-    document.body.classList.toggle("dark", dark);
-
-    $("reader").innerHTML = `<article class="card">
-      <button class="secondary" id="backButton">رجوع للكتب</button>
-      <h2>${esc(content.title)}</h2>
-      <p class="muted">${esc(content.author || "")}</p>
-      <div class="tools reader-tools">
-        <label for="fontChoice">الخط:</label>
-        <select id="fontChoice">
-          <option value="serif">نسخي</option>
-          <option value="sans-serif">حديث</option>
-        </select>
-        <label for="fontSize">الحجم:</label>
-        <input id="fontSize" type="range" min="16" max="30" value="${esc(size)}">
-        <button id="darkButton" class="secondary">الوضع الليلي</button>
-      </div>
-      <div id="bookText"></div>
-    </article>`;
-
-    $("fontChoice").value = font;
-    $("bookText").style.fontFamily = font;
-    $("bookText").style.fontSize = size + "px";
-    $("bookText").innerHTML = (content.sections || []).map(section =>
-      `<h3>${esc(section.heading)}</h3>
-       <div class="reader-text">${esc(section.text)}</div>`
-    ).join("");
-
-    $("backButton").onclick = render;
-    $("fontChoice").onchange = event => {
-      localStorage.setItem("reader-font", event.target.value);
-      $("bookText").style.fontFamily = event.target.value;
-    };
-    $("fontSize").oninput = event => {
-      localStorage.setItem("reader-size", event.target.value);
-      $("bookText").style.fontSize = event.target.value + "px";
-    };
-    $("darkButton").onclick = () => {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("reader-dark", document.body.classList.contains("dark"));
-    };
-  } catch {
-    message("تعذر فتح الكتاب. حاول تنزيله أثناء الاتصال بالإنترنت.");
-  }
-}
-
-$("bookList").addEventListener("click", async event => {
-  const openId = event.target.dataset.open;
-  const downloadId = event.target.dataset.download;
-  const deleteId = event.target.dataset.delete;
-
-  if (openId) await openBook(openId);
-
-  if (downloadId) {
-    const item = catalog.find(book => book.id === downloadId);
-    if (!item) return;
-    message("جارٍ تنزيل الكتاب…");
-    try {
-      const response = await fetch(item.file);
-      if (!response.ok) throw new Error();
-      const content = await response.json();
-      await saveBook({ ...item, content });
-      message("تم تنزيل الكتاب على هذا الجهاز.");
-      await render();
-    } catch {
-      message("فشل التنزيل. تحقق من اتصال الإنترنت.");
-    }
-  }
-
-  if (deleteId) {
-    await deleteBook(deleteId);
-    message("حُذف الكتاب من الجهاز.");
-    await render();
-  }
-});
-
-$("libraryTab").onclick = () => {
-  currentTab = "library";
-  $("libraryTab").classList.add("active");
-  $("downloadsTab").classList.remove("active");
-  render();
-};
-$("downloadsTab").onclick = () => {
-  currentTab = "downloads";
-  $("downloadsTab").classList.add("active");
-  $("libraryTab").classList.remove("active");
-  render();
-};
-$("search").addEventListener("input", render);
-
-async function start() {
-  try {
-    const response = await fetch("./data/index.json");
-    if (!response.ok) throw new Error();
-    catalog = await response.json();
-  } catch {
-    message("تعذر تحديث فهرس الكتب؛ يمكنك فتح الكتب المحمّلة.");
-  }
-  await render();
-}
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
-}
-start();
-</script>
+    <!-- تسجيل Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('✓ Service Worker تم تسجيله'))
+                .catch(err => console.log('✗ خطأ في Service Worker:', err));
+        }
+    </script>
 </body>
 </html>
+
