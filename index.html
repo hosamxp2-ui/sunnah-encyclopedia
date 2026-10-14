@@ -3,139 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تطبيق السنة النبوية - موسوعة شاملة للسنة والحديث">
     <meta name="theme-color" content="#1F3A5E">
+    <meta name="description" content="تطبيق السنة النبوية - موسوعة شاملة للأحاديث الشريفة">
     
-    <title>تطبيق السنة النبوية 📖</title>
+    <title>تطبيق السنة النبوية</title>
     
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231F3A5E' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dy='.3em' font-family='Arial'>📖</text></svg>">
     
-    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dark-mode.css">
 </head>
 <body>
-    <!-- التطبيق الرئيسي -->
-    <div id="app">
-        <!-- الهيدر -->
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-spinner"></div>
+        <p>جاري التحميل...</p>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1>📖 تطبيق السنة</h1>
-                <button id="theme-toggle" class="theme-toggle">🌙</button>
+                <div class="header-left">
+                    <button class="menu-btn" id="menuBtn" aria-label="القائمة">
+                        <svg class="hamburger" viewBox="0 0 24 24" width="24" height="24">
+                            <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/>
+                            <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/>
+                            <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="header-center">
+                    <h1 class="app-title">السنة النبوية</h1>
+                </div>
+                
+                <div class="header-right">
+                    <button class="theme-btn" id="themeBtn" aria-label="تبديل الوضع">
+                        <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                            <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+                            <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/>
+                            <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- محتوى الصفحة -->
+        <!-- Sidebar Menu -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>القائمة الرئيسية</h2>
+                <button class="close-btn" id="closeMenuBtn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#home" class="nav-link active" data-page="home">
+                    <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="#hadith" class="nav-link" data-page="hadith">
+                    <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span>الأحاديث</span>
+                </a>
+                <a href="#favorites" class="nav-link" data-page="favorites">
+                    <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span>المفضلة</span>
+                </a>
+                <a href="#search" class="nav-link" data-page="search">
+                    <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>بحث متقدم</span>
+                </a>
+                <a href="#settings" class="nav-link" data-page="settings">
+                    <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20">
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m6.08 0l4.24-4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m6.08 0l4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span>الإعدادات</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p class="app-version">الإصدار 1.0.0</p>
+                <button class="btn btn-secondary btn-sm" id="downloadBtn">تحميل البيانات</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
         <main class="main-content">
-            <!-- صفحة الرئيسية -->
-            <div id="home-page" class="page active">
-                <!-- شريط البحث -->
+            <!-- Home Page -->
+            <section id="home" class="page active">
+                <div class="page-header">
+                    <h2>أهلاً بك في تطبيق السنة النبوية</h2>
+                    <p class="page-subtitle">موسوعة شاملة للأحاديث الشريفة وشروحاتها</p>
+                </div>
+
                 <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        class="search-input" 
-                        placeholder="ابحث عن حديث..."
-                        autocomplete="off"
-                    >
-                    <button id="search-btn" class="search-btn">🔍</button>
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <input type="text" class="search-input" id="homeSearch" placeholder="ابحث عن حديث، راوي، أو معنى...">
+                        <button class="search-clear" id="searchClear">✕</button>
+                    </div>
                 </div>
 
-                <!-- نتائج البحث / قائمة الأحاديث -->
-                <div id="hadiths-list" class="hadiths-list"></div>
-
-                <!-- تحميل -->
-                <div id="loading" class="loading" style="display:none;">
-                    <div class="spinner"></div>
-                    <p>جاري التحميل...</p>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">الكل</button>
+                    <button class="filter-tab" data-filter="sahih">صحيح</button>
+                    <button class="filter-tab" data-filter="hasan">حسن</button>
+                    <button class="filter-tab" data-filter="daif">ضعيف</button>
                 </div>
-            </div>
 
-            <!-- صفحة تفاصيل الحديث -->
-            <div id="hadith-detail-page" class="page">
-                <button id="back-btn" class="back-btn">← رجوع</button>
-                <div id="hadith-detail-content" class="hadith-detail-content"></div>
-            </div>
+                <div class="hadith-grid">
+                    <!-- سيتم ملأها بـ JavaScript -->
+                </div>
 
-            <!-- صفحة المفضلة -->
-            <div id="favorites-page" class="page">
-                <h2>المفضلة ❤️</h2>
-                <div id="favorites-list" class="favorites-list"></div>
-            </div>
+                <div class="loading-more">
+                    <button class="btn btn-primary" id="loadMoreBtn">تحميل المزيد</button>
+                </div>
+            </section>
 
-            <!-- صفحة الإعدادات -->
-            <div id="settings-page" class="page">
-                <h2>الإعدادات ⚙️</h2>
-                <div class="settings-content">
-                    <!-- المظهر -->
-                    <div class="setting-group">
-                        <h3>المظهر</h3>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="dark-mode" class="checkbox">
-                            الوضع الليلي
-                        </label>
+            <!-- Hadith Detail Page -->
+            <section id="hadith" class="page">
+                <div class="hadith-detail">
+                    <div class="detail-header">
+                        <button class="back-btn" id="backBtn">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <line x1="19" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2"/>
+                                <polyline points="12 19 5 12 12 5" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </button>
+                        <h2>تفاصيل الحديث</h2>
+                        <button class="favorite-btn" id="favBtn">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- حجم الخط -->
-                    <div class="setting-group">
-                        <h3>حجم الخط</h3>
-                        <div class="font-size-control">
-                            <button id="decrease-font" class="btn-small">-</button>
-                            <span id="font-size-display">عادي</span>
-                            <button id="increase-font" class="btn-small">+</button>
+                    <div class="hadith-content">
+                        <div class="hadith-text-box">
+                            <p class="hadith-text" id="hadithText">اختر حديثاً لعرض تفاصيله...</p>
                         </div>
-                    </div>
 
-                    <!-- اللغة -->
-                    <div class="setting-group">
-                        <h3>اللغة</h3>
-                        <select id="language-select" class="select">
-                            <option value="ar">العربية</option>
-                            <option value="en">English</option>
-                        </select>
-                    </div>
+                        <div class="hadith-metadata">
+                            <div class="metadata-item">
+                                <span class="metadata-label">الراوي:</span>
+                                <span class="metadata-value" id="narratorName">—</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">الكتاب:</span>
+                                <span class="metadata-value" id="bookName">—</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">رقم الحديث:</span>
+                                <span class="metadata-value" id="hadithNumber">—</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">الدرجة:</span>
+                                <span class="grade-badge" id="gradeBadge">—</span>
+                            </div>
+                        </div>
 
-                    <!-- عن التطبيق -->
-                    <div class="setting-group">
-                        <h3>عن التطبيق</h3>
-                        <p class="about-text">
-                            تطبيق السنة النبوية - موسوعة شاملة للحديث والسنة<br>
-                            النسخة: 1.0.0<br>
-                            <a href="privacy.html" target="_blank">سياسة الخصوصية</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </main>
+                        <div class="hadith-tabs">
+                            <button class="tab-btn active" data-tab="explanation">الشرح</button>
+                            <button class="tab-btn" data-tab="isnad">الإسناد</button>
+                            <button class="tab-btn" data-tab="scholars">أقوال العلماء</button>
+                        </div>
 
-        <!-- شريط التنقل السفلي -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" data-page="home-page">
-                🏠 الرئيسية
-            </button>
-            <button class="nav-btn" data-page="favorites-page">
-                ❤️ المفضلة
-            </button>
-            <button class="nav-btn" data-page="settings-page">
-                ⚙️ الإعدادات
-            </button>
-        </nav>
-    </div>
+                        <div class="tab-content active" id="explanation">
+                            <div class="explanation-box">
+                                <p id="explanationText">لا توجد شروحات متاحة حالياً</p>
+                            </div>
+                        </div>
 
-    <!-- Scripts -->
-    <script src="js/app.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/ui.js"></script>
-    <script>
-        // تسجيل Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker مسجل'))
-                .catch(err => console.log('خطأ في Service Worker:', err));
-        }
-    </script>
-</body>
-</html>
+                        <div class="tab-content" id="isnad">
+                            <div class="isnad-chain">
+                                <div id="isnadChart">لا توجد بيانات إسناد متاحة</div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="scholars">
+                            <div class="scholars-box">
+                                <p id="scholarsText">لا توجد أقوال علماء متاحة</p>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" id="shareBtn">
+                                <svg viewBox="0 0 24 24" width="18" height="18">
+                                    <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                مشاركة
+                            </button>
+                            <button class="btn btn-secondary" id="copyBtn">
+                                <svg viewBox="0 0 24 24" width="18" height="18">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6
