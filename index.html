@@ -4,199 +4,266 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#145c4b">
-  <meta name="description" content="موسوعة السنة النبوية وشروحها">
+  <meta name="description" content="موسوعة السنة وشروحها">
   <link rel="manifest" href="./manifest.webmanifest">
   <title>موسوعة السنة وشروحها</title>
   <style>
-    :root { font-family: system-ui, sans-serif; color: #19251f; background: #f5f7f5; }
+    :root {
+      font-family: system-ui, sans-serif;
+      color: #202820;
+      background: #f5f7f5;
+    }
     * { box-sizing: border-box; }
     body { margin: 0; }
-    header { background: #145c4b; color: white; padding: 22px 16px; }
-    header h1 { font-size: 1.35rem; margin: 0 0 6px; }
-    header p { margin: 0; opacity: .9; }
+    header { background: #145c4b; color: white; padding: 20px 16px; }
+    header h1 { font-size: 1.35rem; margin: 0 0 5px; }
+    header p { margin: 0; }
     main { max-width: 760px; margin: auto; padding: 16px; }
-    nav { display: flex; gap: 8px; margin-bottom: 16px; }
-    button { font: inherit; cursor: pointer; border: 0; border-radius: 10px; padding: 10px 14px; }
-    nav button, .primary { background: #145c4b; color: white; }
+    nav, .tools, .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    nav { margin-bottom: 14px; }
+    button, select, input { font: inherit; }
+    button { border: 0; border-radius: 10px; padding: 10px 13px; cursor: pointer; }
+    nav button, .primary { color: white; background: #145c4b; }
     nav button.active { background: #0b3f33; }
-    input { width: 100%; padding: 12px; border: 1px solid #cbd5ce; border-radius: 10px; font: inherit; margin-bottom: 14px; }
-    .card { background: white; padding: 16px; margin: 10px 0; border-radius: 14px; border: 1px solid #e1e8e2; }
+    .secondary { color: #145c4b; background: #e8f1ec; }
+    .danger { color: #8c3028; background: #f9e9e7; }
+    #search { width: 100%; padding: 12px; border: 1px solid #cbd5ce; border-radius: 10px; margin: 4px 0 12px; }
+    .card { background: white; padding: 16px; margin: 10px 0; border: 1px solid #e1e8e2; border-radius: 14px; }
     .card h2 { font-size: 1.1rem; margin: 0 0 6px; }
     .muted { color: #637069; font-size: .92rem; }
-    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .secondary { background: #e8f1ec; color: #145c4b; }
-    .danger { background: #f9e9e7; color: #8c3028; }
-    #message { min-height: 1.5em; color: #145c4b; }
-    .text { white-space: pre-wrap; line-height: 1.9; }
+    .actions { margin-top: 12px; }
+    #message { min-height: 1.4em; color: #145c4b; }
+    .reader-text { white-space: pre-wrap; line-height: 1.9; }
+    .reader-tools { align-items: center; margin: 12px 0; }
+    .reader-tools select { padding: 8px; border-radius: 8px; border: 1px solid #ccd5ce; }
     .hidden { display: none; }
-    footer { text-align: center; color: #637069; padding: 22px; font-size: .85rem; }
+    footer { text-align: center; color: #637069; padding: 20px; font-size: .85rem; }
+    body.dark { background: #17201c; color: #edf2ee; }
+    body.dark .card { background: #222d27; border-color: #34443a; }
+    body.dark .muted { color: #bac8be; }
+    body.dark input, body.dark select { background: #222d27; color: white; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>موسوعة السنة وشروحها</h1>
-    <p>ابحث، اقرأ، ونزّل الكتب للقراءة دون إنترنت</p>
-  </header>
+<header>
+  <h1>موسوعة السنة وشروحها</h1>
+  <p>ابحث واقرأ ونزّل الكتب للقراءة دون إنترنت</p>
+</header>
 
-  <main>
-    <nav>
-      <button id="libraryTab" class="active">المكتبة</button>
-      <button id="downloadsTab">تحميلاتي</button>
-    </nav>
+<main>
+  <nav>
+    <button id="libraryTab" class="active">المكتبة</button>
+    <button id="downloadsTab">تحميلاتي</button>
+  </nav>
 
-    <input id="search" type="search" placeholder="ابحث في الكتب المحمّلة أو عناوين الكتب">
-    <p id="message" role="status"></p>
-    <section id="bookList"></section>
-    <section id="reader" class="hidden"></section>
-  </main>
+  <input id="search" type="search" placeholder="ابحث في عناوين الكتب">
+  <p id="message" role="status"></p>
+  <section id="bookList"></section>
+  <section id="reader" class="hidden"></section>
+</main>
 
-  <footer>النسخة التجريبية — البيانات المعروضة للتوضيح فقط</footer>
+<footer>نسخة تجريبية — النص المعروض للتوضيح فقط</footer>
 
 <script>
 const $ = id => document.getElementById(id);
 let catalog = [];
-let downloaded = [];
 let currentTab = "library";
 
-function openDatabase() {
+function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("sunnah-books", 1);
-    request.onupgradeneeded = () => request.result.createObjectStore("books", { keyPath: "id" });
+    const request = indexedDB.open("sunnah-library", 1);
+    request.onupgradeneeded = () =>
+      request.result.createObjectStore("books", { keyPath: "id" });
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
 }
-async function getSavedBooks() {
-  const db = await openDatabase();
+
+async function savedBooks() {
+  const db = await openDB();
   return new Promise((resolve, reject) => {
     const request = db.transaction("books").objectStore("books").getAll();
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
 }
-async function saveBook(book) {
-  const db = await openDatabase();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction("books", "readwrite").objectStore("books").put(book);
-    request.onsuccess = resolve;
-    request.onerror = () => reject(request.error);
-  });
-}
-async function removeBook(id) {
-  const db = await openDatabase();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction("books", "readwrite").objectStore("books").delete(id);
-    request.onsuccess = resolve;
-    request.onerror = () => reject(request.error);
-  });
-}
-function esc(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c =>
-    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]);
-}
-function showMessage(text) { $("message").textContent = text; }
 
-async function refresh() {
-  downloaded = await getSavedBooks();
+async function saveBook(book) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction("books", "readwrite")
+      .objectStore("books").put(book);
+    request.onsuccess = resolve;
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function deleteBook(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction("books", "readwrite")
+      .objectStore("books").delete(id);
+    request.onsuccess = resolve;
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function message(text) {
+  $("message").textContent = text;
+}
+
+async function render() {
+  const saved = await savedBooks();
   const query = $("search").value.trim().toLowerCase();
-  const items = currentTab === "downloads" ? downloaded : catalog;
-  const filtered = items.filter(book =>
+  const books = currentTab === "downloads" ? saved : catalog;
+  const shown = books.filter(book =>
     `${book.title} ${book.author || ""}`.toLowerCase().includes(query)
   );
 
   $("reader").classList.add("hidden");
   $("bookList").classList.remove("hidden");
 
-  if (!filtered.length) {
-    $("bookList").innerHTML = `<article class="card">لا توجد كتب هنا بعد.</article>`;
+  if (!shown.length) {
+    $("bookList").innerHTML =
+      '<article class="card">لا توجد كتب في هذا القسم.</article>';
     return;
   }
 
-  $("bookList").innerHTML = filtered.map(book => {
-    const isSaved = downloaded.some(saved => saved.id === book.id);
+  $("bookList").innerHTML = shown.map(book => {
+    const isSaved = saved.some(item => item.id === book.id);
     return `<article class="card">
       <h2>${esc(book.title)}</h2>
-      <div class="muted">${esc(book.author || "المؤلف غير مضاف")} · ${esc(book.description || "")}</div>
+      <div class="muted">${esc(book.author || "")} ${esc(book.description || "")}</div>
       <div class="actions">
         <button class="primary" data-open="${esc(book.id)}">قراءة</button>
         ${isSaved
           ? `<button class="danger" data-delete="${esc(book.id)}">حذف التنزيل</button>`
-          : `<button class="secondary" data-download="${esc(book.id)}">تنزيل للقراءة دون إنترنت</button>`}
+          : `<button class="secondary" data-download="${esc(book.id)}">تنزيل</button>`}
       </div>
     </article>`;
   }).join("");
 }
 
-async function downloadBook(id) {
+async function getBookContent(id) {
+  const saved = (await savedBooks()).find(book => book.id === id);
+  if (saved) return saved.content;
+
   const item = catalog.find(book => book.id === id);
-  if (!item) return;
-  showMessage("جارٍ تنزيل الكتاب…");
-  try {
-    const response = await fetch(item.file);
-    if (!response.ok) throw new Error("تعذر تحميل الملف");
-    const content = await response.json();
-    await saveBook({ ...item, content });
-    showMessage("تم تنزيل الكتاب على هذا الجهاز.");
-    await refresh();
-  } catch {
-    showMessage("تعذر التنزيل. تحقق من اتصال الإنترنت وحاول مجددًا.");
-  }
+  if (!item) return null;
+
+  const response = await fetch(item.file);
+  if (!response.ok) throw new Error("تعذر تحميل الكتاب");
+  return await response.json();
 }
 
 async function openBook(id) {
-  const saved = (await getSavedBooks()).find(book => book.id === id);
-  let content = saved?.content;
-
-  if (!content) {
-    const item = catalog.find(book => book.id === id);
-    if (!item) return showMessage("هذا الكتاب غير محمّل. اتصل بالإنترنت لتنزيله أولًا.");
-    try {
-      const response = await fetch(item.file);
-      if (!response.ok) throw new Error();
-      content = await response.json();
-    } catch {
-      return showMessage("هذا الكتاب غير متاح دون اتصال. نزّله أولًا أثناء الاتصال بالإنترنت.");
+  try {
+    const content = await getBookContent(id);
+    if (!content) {
+      message("الكتاب غير متاح. اتصل بالإنترنت لتنزيله أولًا.");
+      return;
     }
-  }
 
-  $("bookList").classList.add("hidden");
-  $("reader").classList.remove("hidden");
-  $("reader").innerHTML = `<article class="card">
-    <button class="secondary" id="back">رجوع إلى الكتب</button>
-    <h2>${esc(content.title)}</h2>
-    <p class="muted">${esc(content.author || "")}</p>
-    ${(content.sections || []).map(section => `
-      <h3>${esc(section.heading)}</h3>
-      <div class="text">${esc(section.text)}</div>`).join("")}
-  </article>`;
-  $("back").onclick = refresh;
+    $("bookList").classList.add("hidden");
+    $("reader").classList.remove("hidden");
+
+    const font = localStorage.getItem("reader-font") || "serif";
+    const size = localStorage.getItem("reader-size") || "19";
+    const dark = localStorage.getItem("reader-dark") === "true";
+    document.body.classList.toggle("dark", dark);
+
+    $("reader").innerHTML = `<article class="card">
+      <button class="secondary" id="backButton">رجوع للكتب</button>
+      <h2>${esc(content.title)}</h2>
+      <p class="muted">${esc(content.author || "")}</p>
+      <div class="tools reader-tools">
+        <label for="fontChoice">الخط:</label>
+        <select id="fontChoice">
+          <option value="serif">نسخي</option>
+          <option value="sans-serif">حديث</option>
+        </select>
+        <label for="fontSize">الحجم:</label>
+        <input id="fontSize" type="range" min="16" max="30" value="${esc(size)}">
+        <button id="darkButton" class="secondary">الوضع الليلي</button>
+      </div>
+      <div id="bookText"></div>
+    </article>`;
+
+    $("fontChoice").value = font;
+    $("bookText").style.fontFamily = font;
+    $("bookText").style.fontSize = size + "px";
+    $("bookText").innerHTML = (content.sections || []).map(section =>
+      `<h3>${esc(section.heading)}</h3>
+       <div class="reader-text">${esc(section.text)}</div>`
+    ).join("");
+
+    $("backButton").onclick = render;
+    $("fontChoice").onchange = event => {
+      localStorage.setItem("reader-font", event.target.value);
+      $("bookText").style.fontFamily = event.target.value;
+    };
+    $("fontSize").oninput = event => {
+      localStorage.setItem("reader-size", event.target.value);
+      $("bookText").style.fontSize = event.target.value + "px";
+    };
+    $("darkButton").onclick = () => {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("reader-dark", document.body.classList.contains("dark"));
+    };
+  } catch {
+    message("تعذر فتح الكتاب. حاول تنزيله أثناء الاتصال بالإنترنت.");
+  }
 }
 
 $("bookList").addEventListener("click", async event => {
   const openId = event.target.dataset.open;
   const downloadId = event.target.dataset.download;
   const deleteId = event.target.dataset.delete;
+
   if (openId) await openBook(openId);
-  if (downloadId) await downloadBook(downloadId);
+
+  if (downloadId) {
+    const item = catalog.find(book => book.id === downloadId);
+    if (!item) return;
+    message("جارٍ تنزيل الكتاب…");
+    try {
+      const response = await fetch(item.file);
+      if (!response.ok) throw new Error();
+      const content = await response.json();
+      await saveBook({ ...item, content });
+      message("تم تنزيل الكتاب على هذا الجهاز.");
+      await render();
+    } catch {
+      message("فشل التنزيل. تحقق من اتصال الإنترنت.");
+    }
+  }
+
   if (deleteId) {
-    await removeBook(deleteId);
-    showMessage("حُذف الكتاب من الجهاز.");
-    await refresh();
+    await deleteBook(deleteId);
+    message("حُذف الكتاب من الجهاز.");
+    await render();
   }
 });
+
 $("libraryTab").onclick = () => {
   currentTab = "library";
   $("libraryTab").classList.add("active");
   $("downloadsTab").classList.remove("active");
-  refresh();
+  render();
 };
 $("downloadsTab").onclick = () => {
   currentTab = "downloads";
   $("downloadsTab").classList.add("active");
   $("libraryTab").classList.remove("active");
-  refresh();
+  render();
 };
-$("search").addEventListener("input", refresh);
+$("search").addEventListener("input", render);
 
 async function start() {
   try {
@@ -204,10 +271,11 @@ async function start() {
     if (!response.ok) throw new Error();
     catalog = await response.json();
   } catch {
-    showMessage("تعذر تحديث فهرس المكتبة؛ ستظهر الكتب المحمّلة على الجهاز.");
+    message("تعذر تحديث فهرس الكتب؛ يمكنك فتح الكتب المحمّلة.");
   }
-  await refresh();
+  await render();
 }
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
 }
