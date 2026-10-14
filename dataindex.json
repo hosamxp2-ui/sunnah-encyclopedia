@@ -1,0 +1,9 @@
+[
+  {
+    "id": "sample-book",
+    "title": "كتاب تجريبي",
+    "author": "بيانات توضيحية",
+    "description": "استبدل هذا الكتاب ببيانات كتاب حقيقي لاحقًا",
+    "file": "./data/books/sample-book.json"
+  }
+]
